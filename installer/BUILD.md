@@ -6,6 +6,7 @@
 ShakeToFind\
 ├─ ShakeToFind.ahk       主脚本
 ├─ README.md             用户说明
+├─ build.cmd             一键打包命令
 ├─ installer\
 │  ├─ ShakeToFind.iss    Inno Setup 脚本
 │  ├─ BUILD.md           本文件
@@ -29,16 +30,18 @@ ShakeToFind\
 ## 重新打包
 
 1. 修改根目录的 `ShakeToFind.ahk` 或 `README.md`（`.iss` 直接引用这两个文件，无需复制）。
-2. 在 `installer` 目录下运行编译器：
+2. 在项目根目录执行打包命令：
 
 ```powershell
-cd installer
-& "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe" "ShakeToFind.iss"
+.\build.cmd            # 使用 .iss 里 MyAppVersion 的默认版本
+.\build.cmd 1.0.1      # 指定版本号，不必改 .iss
 ```
 
-也可以双击 `ShakeToFind.iss` 用 Inno Setup 图形界面编译。
+`build.cmd` 会自动查找 Inno Setup 6（依次检查 `%LOCALAPPDATA%\Programs\Inno Setup 6`、Program Files 和 PATH），检查 `payload\` 里的运行时文件是否齐全，然后调用 `ISCC.exe` 编译。
 
-3. 产物在 `dist\ShakeToFind-Setup-<版本>.exe`。版本号在 `.iss` 顶部的 `MyAppVersion` 修改。
+3. 产物在 `dist\ShakeToFind-Setup-<版本>.exe`。不传版本号时，版本号取 `.iss` 顶部的 `MyAppVersion`。
+
+> PowerShell 中要写 `.\build.cmd`；cmd 中直接输入 `build.cmd` 即可。也可以用 Inno Setup 图形界面打开 `ShakeToFind.iss` 手动编译。
 
 ## 安装包行为
 

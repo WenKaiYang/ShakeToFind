@@ -1,8 +1,11 @@
 ; ShakeToFind installer script (Inno Setup 6)
-; Build: "C:\Users\laoyang\AppData\Local\Programs\Inno Setup 6\ISCC.exe" ShakeToFind.iss
+; Build: 在项目根目录运行 build.cmd（或 build.cmd 1.0.1 指定版本号）
+; Manual: "%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe" installer\ShakeToFind.iss
 
 #define MyAppName "ShakeToFind"
+#ifndef MyAppVersion
 #define MyAppVersion "1.0.0"
+#endif
 #define MyAppPublisher "ShakeToFind"
 
 [Setup]

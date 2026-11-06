@@ -62,6 +62,7 @@ macOS 是在系统层面直接放大光标本身，Windows 没有对应接口，
 ## 项目结构
 
 - `ShakeToFind.ahk` —— 主脚本（源码）
+- `build.cmd` —— 一键打包命令
 - `installer\` —— Inno Setup 打包脚本与构建说明
 - `dist\` —— 本地构建产物（不提交到仓库）
 
@@ -69,7 +70,18 @@ macOS 是在系统层面直接放大光标本身，Windows 没有对应接口，
 
 ## 开发 / 构建
 
-安装包使用 Inno Setup 6 构建，具体步骤见 `installer/BUILD.md`。
+在项目根目录执行一条命令即可打包：
+
+```powershell
+.\build.cmd            # 使用 installer\ShakeToFind.iss 中的默认版本
+.\build.cmd 1.0.1      # 指定版本号
+```
+
+产物在 `dist\ShakeToFind-Setup-<版本>.exe`。
+
+首次构建需要安装 [Inno Setup 6](https://jrsoftware.org/isdl.php)，并把 AutoHotkey v2 便携版放进 `installer\payload\`，详见 `installer/BUILD.md`。
+
+> PowerShell 中要写 `.\build.cmd`；cmd 中直接输入 `build.cmd` 即可。
 
 ## 第三方组件
 
