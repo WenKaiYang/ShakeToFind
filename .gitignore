@@ -1,0 +1,18 @@
+# 构建产物
+/dist/
+
+# 安装包依赖的 AutoHotkey 运行时（见 installer/BUILD.md）
+/installer/payload/AutoHotkey32.exe
+/installer/payload/AutoHotkey64.exe
+
+# 运行日志
+trigger.log
+tick.log
+
+# 本地测试安装目录
+/test-install*/
+
+# 系统杂项
+Thumbs.db
+desktop.ini
+*.lnk
