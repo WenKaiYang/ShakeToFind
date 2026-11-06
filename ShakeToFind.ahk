@@ -36,7 +36,7 @@ A_IconTip := "ShakeToFind - 快速移动放大指针"
 
 ; 托盘图标：用安装目录里的品牌图标（与安装包 / 快捷方式同一枚图标）；开发时用 assets\icon 下的源文件
 for iconPath in [A_ScriptDir "\ShakeToFind.ico", A_ScriptDir "\assets\icon\ShakeToFind.ico"] {
-    if FileExists(iconPath) {
+    if FileExist(iconPath) {
         TraySetIcon(iconPath)
         break
     }
