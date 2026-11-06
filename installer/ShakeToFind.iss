@@ -4,9 +4,11 @@
 
 #define MyAppName "ShakeToFind"
 #ifndef MyAppVersion
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.1"
 #endif
 #define MyAppPublisher "ShakeToFind"
+; 品牌图标：安装包、开始菜单、开机启动、卸载项、托盘都用这一枚
+#define MyIcon "..\assets\icon\ShakeToFind.ico"
 
 [Setup]
 AppId={{6B1F6C2E-5C1A-4B7E-9B7B-2A0B9B0C6E21}
@@ -23,7 +25,8 @@ OutputBaseFilename=ShakeToFind-Setup-{#MyAppVersion}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
-UninstallDisplayIcon={app}\AutoHotkey64.exe
+SetupIconFile={#MyIcon}
+UninstallDisplayIcon={app}\ShakeToFind.ico
 UninstallDisplayName={#MyAppName}
 
 [Tasks]
@@ -32,17 +35,18 @@ Name: "startup"; Description: "Start ShakeToFind automatically when Windows star
 [Files]
 Source: "..\ShakeToFind.ahk"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyIcon}"; DestDir: "{app}"; DestName: "ShakeToFind.ico"; Flags: ignoreversion
 Source: "payload\AutoHotkey64.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "payload\AutoHotkey32.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "payload\license.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "payload\stop-running.cmd"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{userstartup}\ShakeToFind"; Filename: "{app}\AutoHotkey64.exe"; Parameters: """{app}\ShakeToFind.ahk"""; WorkingDir: "{app}"; Tasks: startup; Check: IsWin64
-Name: "{userstartup}\ShakeToFind"; Filename: "{app}\AutoHotkey32.exe"; Parameters: """{app}\ShakeToFind.ahk"""; WorkingDir: "{app}"; Tasks: startup; Check: not IsWin64
-Name: "{group}\ShakeToFind"; Filename: "{app}\AutoHotkey64.exe"; Parameters: """{app}\ShakeToFind.ahk"""; WorkingDir: "{app}"; Check: IsWin64
-Name: "{group}\ShakeToFind"; Filename: "{app}\AutoHotkey32.exe"; Parameters: """{app}\ShakeToFind.ahk"""; WorkingDir: "{app}"; Check: not IsWin64
-Name: "{group}\Uninstall ShakeToFind"; Filename: "{uninstallexe}"
+Name: "{userstartup}\ShakeToFind"; Filename: "{app}\AutoHotkey64.exe"; Parameters: """{app}\ShakeToFind.ahk"""; WorkingDir: "{app}"; IconFilename: "{app}\ShakeToFind.ico"; IconIndex: 0; Tasks: startup; Check: IsWin64
+Name: "{userstartup}\ShakeToFind"; Filename: "{app}\AutoHotkey32.exe"; Parameters: """{app}\ShakeToFind.ahk"""; WorkingDir: "{app}"; IconFilename: "{app}\ShakeToFind.ico"; IconIndex: 0; Tasks: startup; Check: not IsWin64
+Name: "{group}\ShakeToFind"; Filename: "{app}\AutoHotkey64.exe"; Parameters: """{app}\ShakeToFind.ahk"""; WorkingDir: "{app}"; IconFilename: "{app}\ShakeToFind.ico"; IconIndex: 0; Check: IsWin64
+Name: "{group}\ShakeToFind"; Filename: "{app}\AutoHotkey32.exe"; Parameters: """{app}\ShakeToFind.ahk"""; WorkingDir: "{app}"; IconFilename: "{app}\ShakeToFind.ico"; IconIndex: 0; Check: not IsWin64
+Name: "{group}\Uninstall ShakeToFind"; Filename: "{uninstallexe}"; IconFilename: "{app}\ShakeToFind.ico"; IconIndex: 0
 
 [Run]
 Filename: "{app}\AutoHotkey64.exe"; Parameters: """{app}\ShakeToFind.ahk"""; WorkingDir: "{app}"; Description: "Start ShakeToFind now"; Flags: nowait postinstall skipifsilent; Check: IsWin64

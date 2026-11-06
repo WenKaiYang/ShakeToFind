@@ -24,13 +24,18 @@ if not defined ISCC (
     exit /b 1
 )
 
-rem ---- 2. Check bundled runtime files ----
+rem ---- 2. Check bundled runtime files and the brand icon ----
 for %%F in (AutoHotkey64.exe AutoHotkey32.exe license.txt stop-running.cmd) do (
     if not exist "%PAYLOAD%\%%F" (
         echo [ERROR] Missing installer\payload\%%F
         echo         See the "First-time setup" section of installer\BUILD.md.
         exit /b 1
     )
+)
+if not exist "%ROOT%assets\icon\ShakeToFind.ico" (
+    echo [ERROR] Missing assets\icon\ShakeToFind.ico
+    echo         Generate it with: python assets\icon\build_icon.py
+    exit /b 1
 )
 
 rem ---- 3. Compile ----

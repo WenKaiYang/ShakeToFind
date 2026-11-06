@@ -36,8 +36,8 @@ macOS 是在系统层面直接放大光标本身，Windows 没有对应接口，
 ## 使用
 
 - 安装包默认设置开机自启：`%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\ShakeToFind.lnk`
-- 退出：托盘区 AutoHotkey 图标（H）右键 → Exit。
-- 修改脚本后：托盘图标右键 → Reload。
+- 退出：托盘区 ShakeToFind 图标（放大镜）右键 → Exit。
+- 修改脚本后：托盘区 ShakeToFind 图标右键 → Reload。
 - 预览放大效果（安装版）：
 
 ```powershell
@@ -61,10 +61,25 @@ macOS 是在系统层面直接放大光标本身，Windows 没有对应接口，
 > 觉得太容易触发就调高 `SPEED_MIN`（如 3500）；觉得甩得很快还不出现就调低（如 1500）。
 > 想更夸张就把 `SCALE_MAX` 调到 8，嫌太大调到 4。
 
+## 图标
+
+安装包、开始菜单 / 开机启动快捷方式、卸载项和托盘图标共用同一枚品牌图标 `assets\icon\ShakeToFind.ico`（16–256 共 10 个尺寸）。
+
+图案是「放大镜 + 放大的指针」：放大镜代表“找鼠标”，镜片里的指针代表“会变大的指针”；冰白镜片保证缩到 16px 也看得清，青→靛渐变的镜圈和琥珀色手柄端是它的辨识点。
+
+想改配色或形状，编辑 `assets\icon\build_icon.py`（需要 Python + Pillow）后重新生成：
+
+```powershell
+python assets\icon\build_icon.py
+```
+
+它会重写 `assets\icon\ShakeToFind.ico` 和预览图 `assets\icon\preview.png`；再执行 `.\build.cmd` 重新打包即可。
+
 ## 项目结构
 
 - `ShakeToFind.ahk` —— 主脚本（源码）
 - `build.cmd` —— 一键打包命令
+- `assets\icon\` —— 品牌图标：生成脚本 `build_icon.py`、多尺寸 `ShakeToFind.ico`、预览图 `preview.png`
 - `installer\` —— Inno Setup 打包脚本与构建说明
 - `dist\` —— 本地构建产物（不提交到仓库）
 

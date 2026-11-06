@@ -16,3 +16,8 @@ tick.log
 Thumbs.db
 desktop.ini
 *.lnk
+
+# Python 缓存（图标生成脚本）
+__pycache__/
+*.pyc
+

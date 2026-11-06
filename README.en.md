@@ -36,8 +36,8 @@ macOS scales the cursor itself at the system level; Windows has no equivalent AP
 ## Usage
 
 - The installer enables auto-start by default: `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\ShakeToFind.lnk`
-- Exit: right-click the AutoHotkey (H) tray icon → Exit.
-- After editing the script: right-click the tray icon → Reload.
+- Exit: right-click the ShakeToFind (magnifier) tray icon → Exit.
+- After editing the script: right-click the ShakeToFind tray icon → Reload.
 - Preview the zoom effect (installed version):
 
 ```powershell
@@ -61,10 +61,25 @@ Open `ShakeToFind.ahk` in Notepad, change the parameters at the top, save, then 
 > If it triggers too easily, raise `SPEED_MIN` (e.g. 3500); if a hard flick still does not trigger it, lower it (e.g. 1500).
 > For a more dramatic effect set `SCALE_MAX` to 8; if it feels too large, set it to 4.
 
+## Icon
+
+The installer, the Start-menu / startup shortcuts, the uninstall entry and the tray icon all share one brand icon: `assets\icon\ShakeToFind.ico` (10 sizes, 16–256).
+
+It is a magnifier with an enlarged pointer: the lens means "find the mouse", the pointer inside means "the pointer that grows". The ice-white lens keeps it readable down to 16 px; the cyan→indigo rim and the amber handle end give it its identity.
+
+To change colours or shapes, edit `assets\icon\build_icon.py` (requires Python + Pillow) and regenerate:
+
+```powershell
+python assets\icon\build_icon.py
+```
+
+This rewrites `assets\icon\ShakeToFind.ico` and the preview `assets\icon\preview.png`; then run `.\build.cmd` again.
+
 ## Project structure
 
 - `ShakeToFind.ahk` — main script (source)
 - `build.cmd` — one-command packaging script
+- `assets\icon\` — brand icon: generator `build_icon.py`, multi-size `ShakeToFind.ico`, preview `preview.png`
 - `installer\` — Inno Setup script and build instructions
 - `dist\` — local build output (not committed)
 
