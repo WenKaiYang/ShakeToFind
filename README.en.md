@@ -45,7 +45,8 @@ A "find my mouse" tool for Windows: once the mouse moves faster than normal, the
 | 🪶 | Lightweight: a single AutoHotkey script, clean install and uninstall |
 | 🔒 | No administrator rights; installs under `%LOCALAPPDATA%`, never touches system folders |
 | 🌐 | Fully local — **no network calls, no data collection** |
-| 🎨 | Ships with a custom icon, consistent across installer, shortcuts and tray |
+| 🎨 | Ships with a custom icon, consistent across the installer, shortcuts, tray and taskbar |
+| 🗣️ | Interface language: the tray menu and tooltips follow the Windows display language by default (Simplified Chinese / English) and can be switched anytime |
 | ⚙️ | Sensitivity and zoom factor are plain parameters at the top of the script |
 
 ## Compared with macOS
@@ -75,13 +76,38 @@ Grab the latest `ShakeToFind-Setup-<version>.exe` from [Releases](https://github
 ## Usage
 
 - The installer enables auto-start by default: `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\ShakeToFind.lnk`
-- Exit: right-click the ShakeToFind (magnifier) tray icon → Exit.
-- After editing the script: right-click the ShakeToFind tray icon → Reload.
+- Exit: right-click the ShakeToFind (magnifier) tray icon → Exit (on the Simplified Chinese interface: 退出).
+- After editing the script: right-click the ShakeToFind tray icon → Reload Script (on the Simplified Chinese interface: 重新加载脚本).
 - Preview the zoom effect (installed version):
 
 ```powershell
 & "$env:LOCALAPPDATA\Programs\ShakeToFind\AutoHotkey64.exe" "$env:LOCALAPPDATA\Programs\ShakeToFind\ShakeToFind.ahk" --demo
 ```
+
+## Interface language
+
+The tray menu and tooltips are available in **Simplified Chinese** and **English**.
+
+- **Follows the system by default**: a Chinese Windows (including Traditional Chinese systems) shows Simplified Chinese, while any other language (including English and non-Chinese systems) shows English. The default is stored as `auto`.
+- **Switch at runtime**: right-click the tray icon → Language → Follow system (automatic) / 简体中文 / English. The change applies immediately, no restart needed. On the Simplified Chinese interface the first item reads 跟随系统（自动）.
+- **Your choice is remembered**: it is saved to `ShakeToFind.ini` next to the script; delete that file and restart to go back to following the system.
+
+```ini
+[General]
+Language=auto
+```
+
+Allowed values: `auto` (follow the system) / `zh` (Simplified Chinese) / `en` (English). In the installed version the file lives at `%LOCALAPPDATA%\Programs\ShakeToFind\ShakeToFind.ini` and is removed on uninstall.
+
+**Temporary override** (nothing is written to the config file; handy for demos, screenshots and testing):
+
+```powershell
+AutoHotkey64.exe ShakeToFind.ahk --lang en
+```
+
+`--lang` accepts `auto` / `zh` / `en`; the existing `--demo` mode is unchanged.
+
+> The tray icon tooltip also follows the interface language.
 
 ## FAQ
 
@@ -96,6 +122,9 @@ A: No. Everything runs locally in a single `ShakeToFind.ahk` file — no network
 
 **Q: Will it conflict with other mouse utilities?**
 A: Unlikely. It only reads the mouse position and draws an overlay; it doesn't hook, inject or take over input. Running two such tools at once may cause overlapping layers, so pick one.
+
+**Q: Can I change the menu language?**
+A: Yes. It follows the Windows display language by default (Simplified Chinese on Chinese systems, English everywhere else); you can switch anytime under "Language" in the tray icon's right-click menu. The change is instant and remembered (saved to `ShakeToFind.ini` next to the script — delete it and restart to go back to following the system). For a one-off override, run `AutoHotkey64.exe ShakeToFind.ahk --lang en`.
 
 **Q: Why are the magnified edges less sharp than native rendering?**
 A: Windows exposes no system-level cursor scaling API, so this uses GDI bitmap scaling with HALFTONE smoothing to approximate the macOS look — which leaves slight jaggies.
@@ -115,7 +144,7 @@ A: See "Tuning sensitivity / appearance" below.
 
 ## Tuning sensitivity / appearance
 
-Open `ShakeToFind.ahk` in Notepad, change the parameters at the top, save, then Reload:
+Open `ShakeToFind.ahk` in Notepad, change the parameters at the top, save, then choose Reload Script from the tray menu (on the Simplified Chinese interface: 重新加载脚本):
 
 | Parameter | Default | Description |
 | --- | --- | --- |
@@ -132,7 +161,7 @@ Open `ShakeToFind.ahk` in Notepad, change the parameters at the top, save, then 
 
 ## Icon
 
-The installer, the Start-menu / startup shortcuts, the uninstall entry and the tray icon all share one brand icon: `assets\icon\ShakeToFind.ico` (10 sizes, 16–256).
+The installer, the Start-menu / startup shortcuts, the uninstall entry, the tray icon and the script's main window (the one shown in the taskbar / Alt+Tab after choosing Open) all share one brand icon: `assets\icon\ShakeToFind.ico` (10 sizes, 16–256).
 
 It is a magnifier with an enlarged pointer: the lens means "find the mouse", the pointer inside means "the pointer that grows". The ice-white lens keeps it readable down to 16 px; the cyan→indigo rim and the amber handle end give it its identity.
 
@@ -151,6 +180,7 @@ This rewrites `assets\icon\ShakeToFind.ico` and the preview `assets\icon\preview
 - `assets\icon\` — brand icon: generator `build_icon.py`, multi-size `ShakeToFind.ico`, preview `preview.png`
 - `installer\` — Inno Setup script and build instructions
 - `dist\` — local build output (not committed)
+- `ShakeToFind.ini` — generated at runtime (only after you switch the interface language); stores your choice
 
 After installation the files live in `%LOCALAPPDATA%\Programs\ShakeToFind\`: the script, a portable AutoHotkey v2, and `license.txt`.
 

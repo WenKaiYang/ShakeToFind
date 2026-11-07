@@ -57,7 +57,7 @@ ShakeToFind\
 - 开始菜单创建启动和卸载快捷方式。
 - 安装包、快捷方式、卸载项和托盘图标共用同一枚品牌图标，安装时会把 `ShakeToFind.ico` 一并装进安装目录。
 - 卸载或覆盖安装前，会运行 `stop-running.cmd` 结束正在运行的 ShakeToFind 实例。
-- 卸载会删除快捷方式和安装目录；`trigger.log` 等调试文件也会清理。
+- 卸载会删除快捷方式和安装目录；`trigger.log`、`ShakeToFind.ini`（界面语言选择）等运行期文件也会清理。
 
 ## 图标
 

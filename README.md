@@ -45,7 +45,8 @@ Windows 版「找鼠标」工具：鼠标移动速度超过正常速度后，指
 | 🪶 | 轻量：单文件 AutoHotkey 脚本，绿色安装、干净卸载 |
 | 🔒 | 无需管理员权限，装在 `%LOCALAPPDATA%`，不写系统目录 |
 | 🌐 | 纯本地运行，**不联网、不收集任何数据** |
-| 🎨 | 自带品牌图标，安装包 / 快捷方式 / 托盘图标一致 |
+| 🎨 | 自带品牌图标，安装包 / 快捷方式 / 托盘 / 任务栏图标一致 |
+| 🗣️ | 界面多语言：托盘菜单与提示默认跟随 Windows 显示语言（简体中文 / English），可随时切换 |
 | ⚙️ | 灵敏度、放大倍数等参数可在脚本顶部直接改 |
 
 ## 与 macOS 的对比
@@ -75,13 +76,38 @@ macOS 是在系统层面直接放大光标本身，Windows 没有对应接口，
 ## 使用
 
 - 安装包默认设置开机自启：`%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\ShakeToFind.lnk`
-- 退出：托盘区 ShakeToFind 图标（放大镜）右键 → Exit。
-- 修改脚本后：托盘区 ShakeToFind 图标右键 → Reload。
+- 退出：托盘区 ShakeToFind 图标（放大镜）右键 → 退出（English 界面为 Exit）。
+- 修改脚本后：托盘区 ShakeToFind 图标右键 → 重新加载脚本（English 界面为 Reload Script）。
 - 预览放大效果（安装版）：
 
 ```powershell
 & "$env:LOCALAPPDATA\Programs\ShakeToFind\AutoHotkey64.exe" "$env:LOCALAPPDATA\Programs\ShakeToFind\ShakeToFind.ahk" --demo
 ```
+
+## 界面语言
+
+托盘菜单和提示文字支持两种界面语言：**简体中文** 和 **English**。
+
+- **默认跟随系统**：中文版 Windows（含繁体中文系统）显示简体中文，其它语言（包括英文和非中文系统）显示 English，默认值在配置里记作 `auto`。
+- **运行时可切换**：托盘图标右键 →「语言」→「跟随系统（自动）」/「简体中文」/「English」，切换立即生效，无需重启。英文界面下第一条显示为 Follow system (automatic)。
+- **选择会被记住**：保存在脚本同目录的 `ShakeToFind.ini` 中；删除该文件后，下次启动即恢复「跟随系统」。
+
+```ini
+[General]
+Language=auto
+```
+
+取值 `auto`（跟随系统）/ `zh`（简体中文）/ `en`（English）。安装版中该文件的路径为 `%LOCALAPPDATA%\Programs\ShakeToFind\ShakeToFind.ini`，卸载时会一并删除。
+
+**临时覆盖**（不写配置文件，适合演示 / 截图 / 测试）：
+
+```powershell
+AutoHotkey64.exe ShakeToFind.ahk --lang en
+```
+
+`--lang` 接受 `auto` / `zh` / `en`；原有的 `--demo` 演示模式不受影响。
+
+> 托盘图标的提示文字也会跟随界面语言。
 
 ## 常见问题
 
@@ -96,6 +122,9 @@ A：不会。全部逻辑在本地 `ShakeToFind.ahk` 一个文件里，无网络
 
 **Q：会不会和别的鼠标软件冲突？**
 A：它只读取鼠标位置并绘制一个覆盖层，不Hook、不注入、不接管输入，一般不会冲突。同时开多个此类工具时可能互相遮挡，建议只留一个。
+
+**Q：菜单能换成英文吗？**
+A：可以。默认跟随 Windows 显示语言（中文系统 → 简体中文，其它 → English）；在托盘图标右键菜单的「语言」里可以随时切换，切换立即生效，并且会记住选择（保存在脚本同目录的 `ShakeToFind.ini`，删除后下次启动恢复跟随系统）。也可以用命令行临时覆盖：`AutoHotkey64.exe ShakeToFind.ahk --lang en`。
 
 **Q：为什么放大后的边缘不如系统渲染锐利？**
 A：Windows 没有提供系统级的光标缩放接口，这里用 GDI 位图放大 + HALFTONE 平滑来逼近 macOS 的观感，所以边缘略有锯齿。
@@ -115,7 +144,7 @@ A：见下方「调整灵敏度 / 外观」。
 
 ## 调整灵敏度 / 外观
 
-用记事本打开 `ShakeToFind.ahk`，改顶部的参数并保存，然后 Reload：
+用记事本打开 `ShakeToFind.ahk`，改顶部的参数并保存，然后从托盘菜单选择「重新加载脚本」（English 界面为 Reload Script）：
 
 | 参数 | 默认 | 说明 |
 | --- | --- | --- |
@@ -132,7 +161,7 @@ A：见下方「调整灵敏度 / 外观」。
 
 ## 图标
 
-安装包、开始菜单 / 开机启动快捷方式、卸载项和托盘图标共用同一枚品牌图标 `assets\icon\ShakeToFind.ico`（16–256 共 10 个尺寸）。
+安装包、开始菜单 / 开机启动快捷方式、卸载项、托盘图标，以及脚本主窗口（托盘菜单「打开」后出现在任务栏 / Alt+Tab 的那个窗口）共用同一枚品牌图标 `assets\icon\ShakeToFind.ico`（16–256 共 10 个尺寸）。
 
 图案是「放大镜 + 放大的指针」：放大镜代表“找鼠标”，镜片里的指针代表“会变大的指针”；冰白镜片保证缩到 16px 也看得清，青→靛渐变的镜圈和琥珀色手柄端是它的辨识点。
 
@@ -151,6 +180,7 @@ python assets\icon\build_icon.py
 - `assets\icon\` —— 品牌图标：生成脚本 `build_icon.py`、多尺寸 `ShakeToFind.ico`、预览图 `preview.png`
 - `installer\` —— Inno Setup 打包脚本与构建说明
 - `dist\` —— 本地构建产物（不提交到仓库）
+- `ShakeToFind.ini` —— 运行时生成（仅在切换过界面语言后出现），保存界面语言选择
 
 安装后位于 `%LOCALAPPDATA%\Programs\ShakeToFind\`，包含脚本、便携版 AutoHotkey v2 和 `license.txt`。
 

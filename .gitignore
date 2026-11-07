@@ -9,6 +9,9 @@
 trigger.log
 tick.log
 
+# 运行时配置（界面语言选择，见 README「界面语言」）
+ShakeToFind.ini
+
 # 本地测试安装目录
 /test-install*/
 

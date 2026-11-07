@@ -4,7 +4,7 @@
 
 #define MyAppName "ShakeToFind"
 #ifndef MyAppVersion
-#define MyAppVersion "1.0.2"
+#define MyAppVersion "1.0.3"
 #endif
 #define MyAppPublisher "ShakeToFind"
 ; 品牌图标：安装包、开始菜单、开机启动、卸载项、托盘都用这一枚
@@ -54,6 +54,7 @@ Filename: "{app}\AutoHotkey32.exe"; Parameters: """{app}\ShakeToFind.ahk"""; Wor
 
 [UninstallDelete]
 Type: files; Name: "{app}\trigger.log"
+Type: files; Name: "{app}\ShakeToFind.ini"
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);

@@ -31,26 +31,52 @@ global gWinW := 0, gWinH := 0
 global gHdcWin := 0, gMemDC := 0, gHbm := 0, gOldBmp := 0, gKeyBrush := 0
 global gHCursor := 0, gHx := 0, gHy := 0, gCw := 0, gCh := 0
 global gTimerFast := false
+global gIconBig := 0, gIconSmall := 0   ; 品牌图标句柄（窗口图标用）
 
-A_IconTip := "ShakeToFind - 快速移动放大指针"
-
-; 托盘图标：用安装目录里的品牌图标（与安装包 / 快捷方式同一枚图标）；开发时用 assets\icon 下的源文件
-for iconPath in [A_ScriptDir "\ShakeToFind.ico", A_ScriptDir "\assets\icon\ShakeToFind.ico"] {
-    if FileExist(iconPath) {
-        TraySetIcon(iconPath)
-        break
+; ==================== 命令行参数 ====================
+; --demo       预览放大效果
+; --lang xx    临时指定界面语言（auto / zh / en），只影响本次运行，不写入配置文件
+global gCmdDemo := false, gCmdLang := ""
+for i, arg in A_Args {
+    if (arg = "--demo")
+        gCmdDemo := true
+    else if (arg = "--lang" && i < A_Args.Length) {
+        v := StrLower(A_Args[i + 1])
+        if (v = "auto" || v = "zh" || v = "en")
+            gCmdLang := v
     }
 }
+
+; ==================== 界面语言 ====================
+; 默认跟随系统语言；托盘「语言」子菜单可切换，选择保存在脚本目录的 ShakeToFind.ini
+global gLang := ""              ; 当前生效语言：zh / en
+global gLangPref := "auto"      ; 用户偏好：auto / zh / en
+global gLangMenu := 0           ; 「语言」子菜单（Menu 对象）
+global gLangMenuItem := ""      ; 「语言」菜单项的当前文本
+global gMenuLabels := Map()     ; 标准菜单项 key -> 当前显示文本
+
+; 图标：托盘、任务栏按钮、Alt+Tab、窗口预览统一用同一枚品牌图标（与安装包 / 快捷方式同一枚）
+iconFile := FindIconFile()
+if (iconFile)
+    TraySetIcon(iconFile)
+
+; 脚本主窗口（托盘菜单「打开」时显示）默认是 AutoHotkey 的绿色 H 图标，
+; 这里也换成品牌图标，任务栏 / Alt+Tab / 窗口预览里的图标才一致
+LoadWindowIcons()
+ApplyWindowIcon(A_ScriptHwnd)
 
 CoordMode("Mouse", "Screen")
 MouseGetPos(&gLastX, &gLastY)
 
 ; 演示模式（预览放大效果）：
 ; AutoHotkey64.exe ShakeToFind.ahk --demo
-if (A_Args.Length && A_Args[1] = "--demo") {
+if (gCmdDemo) {
     RunDemo()
     ExitApp
 }
+
+; 应用界面语言：--lang 优先，其次读配置；auto 时跟随系统
+ApplyLanguage(gCmdLang != "" ? gCmdLang : ReadLangPref())
 
 SetTimer(SampleMouse, TIMER_IDLE)
 
@@ -186,6 +212,7 @@ CreateOverlay(x, y) {
     WinSetTransColor("010101", "ahk_id " g.Hwnd)
     DetectHiddenWindows(false)
     g.Show("NoActivate x" (x - gMargin) " y" (y - gMargin) " w" gWinW " h" gWinH)
+    ApplyWindowIcon(g.Hwnd)
     ; 置于置顶窗口组的最上层
     DllCall("SetWindowPos", "Ptr", g.Hwnd, "Ptr", -1, "Int", 0, "Int", 0, "Int", 0, "Int", 0
         , "UInt", 0x0001 | 0x0002 | 0x0010)   ; NOSIZE | NOMOVE | NOACTIVATE
@@ -295,6 +322,198 @@ HideOverlay() {
     gOverlay := 0
     gScale := 1.0
     gDrawnScale := 0
+}
+
+; ==================== 图标 ====================
+; 品牌图标路径：安装目录优先（与安装包 / 快捷方式同一枚），开发目录兜底
+FindIconFile() {
+    for iconPath in [A_ScriptDir "\ShakeToFind.ico", A_ScriptDir "\assets\icon\ShakeToFind.ico"] {
+        if FileExist(iconPath)
+            return iconPath
+    }
+    return ""
+}
+
+; 加载品牌图标的大 / 小两档句柄（供窗口图标使用；句柄保留到进程结束）
+LoadWindowIcons() {
+    global gIconBig, gIconSmall
+    iconFile := FindIconFile()
+    if (!iconFile)
+        return
+    ; IMAGE_ICON = 1，LR_LOADFROMFILE = 0x10
+    ; SM_CXICON / SM_CYICON = 11 / 12，SM_CXSMICON / SM_CYSMICON = 49 / 50
+    gIconBig := DllCall("LoadImageW", "Ptr", 0, "Str", iconFile, "UInt", 1
+        , "Int", DllCall("GetSystemMetrics", "Int", 11), "Int", DllCall("GetSystemMetrics", "Int", 12)
+        , "UInt", 0x10, "Ptr", 0)
+    gIconSmall := DllCall("LoadImageW", "Ptr", 0, "Str", iconFile, "UInt", 1
+        , "Int", DllCall("GetSystemMetrics", "Int", 49), "Int", DllCall("GetSystemMetrics", "Int", 50)
+        , "UInt", 0x10, "Ptr", 0)
+}
+
+; 给窗口设置品牌图标：任务栏按钮、Alt+Tab、窗口预览都会用它
+ApplyWindowIcon(hwnd) {
+    global gIconBig, gIconSmall
+    if (gIconBig)
+        DllCall("SendMessageW", "Ptr", hwnd, "UInt", 0x80, "Ptr", 1, "Ptr", gIconBig)     ; WM_SETICON, ICON_BIG
+    if (gIconSmall)
+        DllCall("SendMessageW", "Ptr", hwnd, "UInt", 0x80, "Ptr", 0, "Ptr", gIconSmall)   ; WM_SETICON, ICON_SMALL
+}
+
+; ==================== 界面语言 ====================
+; 界面文案。新增一种语言：在 UiStrings 里加一个分支，并把语言代码加进菜单
+UiStrings(lang) {
+    if (lang = "zh")
+        return Map(
+            "tip",       "ShakeToFind — 快速移动放大指针",
+            "open",      "打开(&O)",
+            "help",      "帮助(&H)",
+            "windowSpy", "窗口探测(&W)",
+            "reload",    "重新加载脚本(&R)",
+            "edit",      "编辑脚本(&E)",
+            "suspend",   "挂起热键(&S)",
+            "pause",     "暂停脚本(&P)",
+            "exit",      "退出(&X)",
+            "language",  "语言(&L)",
+            "langAuto",  "跟随系统（自动）",
+            "langZh",    "简体中文",
+            "langEn",    "English")
+    return Map(
+        "tip",       "ShakeToFind — Enlarge the pointer when you move fast",
+        "open",      "&Open",
+        "help",      "&Help",
+        "windowSpy", "&Window Spy",
+        "reload",    "&Reload Script",
+        "edit",      "&Edit Script",
+        "suspend",   "&Suspend Hotkeys",
+        "pause",     "&Pause Script",
+        "exit",      "E&xit",
+        "language",  "&Language",
+        "langAuto",  "Follow system (automatic)",
+        "langZh",    "简体中文",
+        "langEn",    "English")
+}
+
+; AHK 内置托盘菜单项的英文名。只改显示文本、保留内置 ID，所以 Reload / Suspend / Pause 等功能不变
+StandardTrayItems() {
+    return Map(
+        "open",      "&Open",
+        "help",      "&Help",
+        "windowSpy", "&Window Spy",
+        "reload",    "&Reload Script",
+        "edit",      "&Edit Script",
+        "suspend",   "&Suspend Hotkeys",
+        "pause",     "&Pause Script",
+        "exit",      "E&xit")
+}
+
+; 系统用户界面语言 -> 界面语言代码
+DetectSystemLanguage() {
+    static detected := ""
+    if (detected)
+        return detected
+    langId := 0
+    try langId := DllCall("GetUserDefaultUILanguage", "UShort")
+    primary := langId & 0x3FF
+    ; 0x04 = 中文；本项目目前只提供简体中文，繁体系统也先显示简体中文
+    detected := (primary = 0x04) ? "zh" : "en"
+    return detected
+}
+
+; 界面语言偏好存在脚本同目录的 ShakeToFind.ini
+IniPath() {
+    return A_ScriptDir "\ShakeToFind.ini"
+}
+
+; 说明：这里先用 FileRead("UTF-8") 自己解析，因为 AHK 的 IniRead 不认带 BOM 的 UTF-8 ini
+; （记事本等编辑器可能这样保存），而 FileRead 会自动跳过/识别 BOM。
+ReadLangPref() {
+    ini := IniPath()
+    if (!FileExist(ini))
+        return "auto"
+    text := ""
+    try
+        text := FileRead(ini, "UTF-8")
+    catch
+        text := ""
+    ; 手工编辑的文件只认 Language= 这一行，不要求 [General] 段格式完全正确
+    if (RegExMatch(text, "im)^[ \t]*Language[ \t]*=[ \t]*([A-Za-z]+)", &m)) {
+        pref := StrLower(m[1])
+        if (pref = "zh" || pref = "en" || pref = "auto")
+            return pref
+    }
+    ; 兜底：旧版本 IniWrite 或某些编辑器会存成 UTF-16，此时上面的文本读取可能拿不到，
+    ; 再用 IniRead 试一次（它对 UTF-16 友好；UTF-8 BOM 的情况已由上面的正则命中）
+    pref := ""
+    try
+        pref := IniRead(ini, "General", "Language", "")
+    catch
+        return "auto"
+    pref := StrLower(Trim(pref))
+    return (pref = "zh" || pref = "en" || pref = "auto") ? pref : "auto"
+}
+
+WriteLangPref(pref) {
+    try {
+        f := FileOpen(IniPath(), "w", "UTF-8")
+        f.Write("[General]`r`nLanguage=" pref "`r`n")
+        f.Close()
+    }
+}
+
+; 应用界面语言：pref = auto / zh / en（auto 表示跟随系统）
+ApplyLanguage(pref, persist := false) {
+    global gLang, gLangPref, gLangMenu, gLangMenuItem, gMenuLabels
+
+    pref := StrLower(Trim(pref))
+    if (pref != "auto" && pref != "zh" && pref != "en")
+        pref := "auto"
+    gLangPref := pref
+    if (persist)
+        WriteLangPref(pref)
+
+    gLang := (pref = "auto") ? DetectSystemLanguage() : pref
+    s := UiStrings(gLang)
+
+    ; 第一次：记下内置菜单项原名，并在「退出」上方插入分隔线和「语言」子菜单
+    if (gLangMenu = 0) {
+        for key, name in StandardTrayItems()
+            gMenuLabels[key] := name
+        gLangMenuItem := "&Language"
+        gLangMenu := Menu()
+        A_TrayMenu.Insert("E&xit")                          ; 语言上方的分隔线
+        A_TrayMenu.Insert("E&xit", gLangMenuItem, gLangMenu)
+        A_TrayMenu.Insert("E&xit")                          ; 退出上方的分隔线
+    }
+
+    ; 重命名内置菜单项（内置 ID 不变，Suspend/Pause 的勾选状态仍由 AHK 维护）
+    for key, officialName in StandardTrayItems() {
+        oldName := gMenuLabels.Has(key) ? gMenuLabels[key] : officialName
+        newName := s[key]
+        if (newName != oldName) {
+            try A_TrayMenu.Rename(oldName, newName)
+            gMenuLabels[key] := newName
+        }
+    }
+
+    ; 重建「语言」子菜单（勾选当前选择）
+    if (gLangMenuItem != s["language"]) {
+        try A_TrayMenu.Rename(gLangMenuItem, s["language"])
+        gLangMenuItem := s["language"]
+    }
+    gLangMenu.Delete()
+    gLangMenu.Add(s["langAuto"], ChooseLanguage.Bind("auto"), "Radio")
+    gLangMenu.Add(s["langZh"], ChooseLanguage.Bind("zh"), "Radio")
+    gLangMenu.Add(s["langEn"], ChooseLanguage.Bind("en"), "Radio")
+    checked := (gLangPref = "zh") ? s["langZh"] : ((gLangPref = "en") ? s["langEn"] : s["langAuto"])
+    gLangMenu.Check(checked)
+
+    ; 托盘图标提示也跟着切换
+    A_IconTip := s["tip"]
+}
+
+; 用户从菜单切换语言：先保存偏好，再稍后重建菜单（避免在菜单回调里直接改动菜单本身）
+ChooseLanguage(pref, *) {
+    SetTimer(ApplyLanguage.Bind(pref, true), -30)
 }
 
 ; ==================== 演示模式 ====================
