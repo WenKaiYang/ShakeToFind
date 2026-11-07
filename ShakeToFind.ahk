@@ -4,7 +4,7 @@ Persistent
 
 ; ============================================================
 ;  ShakeToFind —— 快速移动鼠标时放大指针：越快越大，慢下来变小
-;  放大后的光标实时跟随，形状随实际光标变化
+;  放大后的指针「替换」真实指针：屏幕上只剩放大的那一个，看不到小光标
 ; ============================================================
 
 ; ==================== 可调参数 ====================
@@ -104,6 +104,7 @@ SampleMouse() {
     }
 
     ; 显示期间若光标形状变了（箭头 / I 型 / 手型），实时换图
+    ; 注意：形状变了必须重画，否则 1:1 遮盖层仍是旧形状，系统新光标会露出来
     ci := Buffer(A_PtrSize = 8 ? 24 : 20, 0)
     NumPut("UInt", ci.Size, ci, 0)
     if (DllCall("GetCursorInfo", "Ptr", ci)) {
@@ -123,7 +124,7 @@ SampleMouse() {
         return
     }
 
-    ; 像素尺寸变化超过 1 才重绘
+    ; 像素尺寸变化超过 1 才重绘（gDrawnScale = 0 时会强制重画一次）
     if (Abs(gScale - gDrawnScale) * gCw >= 1) {
         DrawOverlay(gScale)
         gDrawnScale := gScale
@@ -223,6 +224,11 @@ DisableFastTimer() {
 }
 
 ; 按指定倍数把光标画到内存位图，再一次性贴到窗口（避免闪烁）
+;
+; 关键：系统光标永远画在屏幕最上层，我们无法「擦除」它。
+; 但可以在覆盖层上先用 1:1 的原始光标形状画一遍 —— 这一笔和系统光标完全重叠，
+; 颜色键透明让只有光标笔画部分不透明，正好把系统光标盖住；
+; 随后再在同一位置画放大的光标。于是屏幕上只剩放大的那一个，看不到小光标。
 DrawOverlay(scaleFactor) {
     global gMemDC, gHdcWin, gWinW, gWinH, gKeyBrush
     global gHCursor, gHx, gHy, gCw, gCh, gMargin
@@ -234,6 +240,13 @@ DrawOverlay(scaleFactor) {
     NumPut("Int", gWinH, rect, 12)
     DllCall("FillRect", "Ptr", gMemDC, "Ptr", rect, "Ptr", gKeyBrush)
 
+    ; 第一步：按 1:1 画一遍当前光标，用来遮住系统光标（热点对齐到窗口中心）
+    if (gHCursor) {
+        DllCall("DrawIconEx", "Ptr", gMemDC, "Int", gMargin - gHx, "Int", gMargin - gHy
+            , "Ptr", gHCursor, "Int", gCw, "Int", gCh, "UInt", 0, "Ptr", 0, "UInt", 3)   ; DI_NORMAL
+    }
+
+    ; 第二步：画放大的光标
     dw := Round(gCw * scaleFactor)
     dh := Round(gCh * scaleFactor)
     dx := gMargin - Round(gHx * scaleFactor)

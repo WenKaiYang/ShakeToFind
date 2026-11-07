@@ -31,6 +31,7 @@ A "find my mouse" tool for Windows: once the mouse moves faster than normal, the
 - In between, the scale changes continuously with speed — bigger when fast, smaller when slow, smoothly.
 - The enlarged cursor follows the mouse in real time; it updates every 5 ms while visible, so it feels more responsive than usual.
 - The current cursor shape is synced automatically (arrow / I-beam / hand).
+- **The enlarged pointer replaces the real one**: only the magnified cursor is left on screen — you never see a small cursor and a big cursor at the same time.
 - The overlay is click-through, never steals focus, and does not affect clicking.
 
 ## Features
@@ -38,6 +39,7 @@ A "find my mouse" tool for Windows: once the mouse moves faster than normal, the
 | | |
 | --- | --- |
 | 🖱️ | Speed-driven zoom: faster = bigger, shrinks back when you slow down |
+| ⛔ | The enlarged pointer replaces the real one — never a small cursor beside a big one |
 | 🪟 | Click-through overlay: no focus stealing, no blocked clicks |
 | 🔄 | Syncs the live cursor shape (arrow / I-beam / hand) |
 | 🪶 | Lightweight: a single AutoHotkey script, clean install and uninstall |
