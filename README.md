@@ -2,7 +2,26 @@
 
 # ShakeToFind —— 快速移动就放大指针（越快越大）
 
+[![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-blue.svg)](https://github.com/WenKaiYang/ShakeToFind/releases)
+[![AutoHotkey v2](https://img.shields.io/badge/AutoHotkey-v2.0-purple.svg)](https://www.autohotkey.com/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/WenKaiYang/ShakeToFind?label=Release&color=green)](https://github.com/WenKaiYang/ShakeToFind/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/WenKaiYang/ShakeToFind/total?color=blue)](https://github.com/WenKaiYang/ShakeToFind/releases)
+
+> **找鼠标 / 找光标 / 鼠标放大 / 光标放大 / 鼠标指针变大 / 丢失鼠标位置 / 屏幕太小看不清光标 / 找不到鼠标箭头 / cursor finder / enlarge cursor / magnify mouse pointer**
+>
+> Windows 上「鼠标指针找不到 / 看不清 / 想让光标更大」的轻量解决方案。鼠标移动得越快，指针放大得越多。
+
+![ShakeToFind 图标](assets/icon/preview.png)
+
 Windows 版「找鼠标」工具：鼠标移动速度超过正常速度后，指针开始放大；**速度越快放大倍数越大**，慢下来按速度连续缩小，最终恢复原大小。
+
+## 为什么需要它
+
+- **双屏 / 大屏 / 投影**：光标在不同分辨率的屏幕之间穿梭，容易「丢失」。
+- **笔记本触控板 + 外接显示器**：缩放比例不同，光标在小屏上小得几乎看不见。
+- **演示 / 录屏 / 教学**：远处的观众看不清你指向哪里。
+- **给老人 / 视力不佳者**：把光标放大到 4–6 倍，看得清点击位置。
 
 ## 效果
 
@@ -13,6 +32,19 @@ Windows 版「找鼠标」工具：鼠标移动速度超过正常速度后，指
 - 放大的光标实时跟随鼠标；显示期间每 5ms 更新一次，比平时更跟手。
 - 跟随过程中会自动同步当前光标形状（箭头 / I 型 / 手型）。
 - 覆盖层鼠标穿透、不抢焦点，不影响点击。
+
+## 特性
+
+| | |
+| --- | --- |
+| 🖱️ | 速度驱动放大：越快越大，慢下来自动恢复 |
+| 🪟 | 穿透覆盖层：不抢焦点、不挡点击、鼠标可穿透 |
+| 🔄 | 实时同步光标形状（箭头 / I 型 / 手型） |
+| 🪶 | 轻量：单文件 AutoHotkey 脚本，绿色安装、干净卸载 |
+| 🔒 | 无需管理员权限，装在 `%LOCALAPPDATA%`，不写系统目录 |
+| 🌐 | 纯本地运行，**不联网、不收集任何数据** |
+| 🎨 | 自带品牌图标，安装包 / 快捷方式 / 托盘图标一致 |
+| ⚙️ | 灵敏度、放大倍数等参数可在脚本顶部直接改 |
 
 ## 与 macOS 的对比
 
@@ -27,11 +59,16 @@ Windows 版「找鼠标」工具：鼠标移动速度超过正常速度后，指
 
 macOS 是在系统层面直接放大光标本身，Windows 没有对应接口，因此这里用「穿透覆盖层 + 实时跟随」来逼近；缩放边缘为位图放大，仍不如系统渲染锐利。
 
-## 安装 / 卸载
+## 下载安装
 
-- 安装：运行 `dist\ShakeToFind-Setup-<版本>.exe`（构建方法见 `installer/BUILD.md`），安装到 `%LOCALAPPDATA%\Programs\ShakeToFind`，无需管理员权限；默认勾选「开机自动启动」。
+从 [Releases](https://github.com/WenKaiYang/ShakeToFind/releases) 下载最新安装包 `ShakeToFind-Setup-<版本>.exe`：
+
+- 安装到 `%LOCALAPPDATA%\Programs\ShakeToFind`，**无需管理员权限**。
+- 默认勾选「开机自动启动」，可在安装向导的「附加任务」里取消。
 - 卸载：Windows 设置 → 应用 → ShakeToFind → 卸载（或开始菜单里的 Uninstall ShakeToFind）。
 - 迁移：把安装包复制到其他电脑直接运行即可。
+
+> 安装包未做代码签名，首次运行可能出现 SmartScreen 提示，点「更多信息」→「仍要运行」。
 
 ## 使用
 
@@ -43,6 +80,36 @@ macOS 是在系统层面直接放大光标本身，Windows 没有对应接口，
 ```powershell
 & "$env:LOCALAPPDATA\Programs\ShakeToFind\AutoHotkey64.exe" "$env:LOCALAPPDATA\Programs\ShakeToFind\ShakeToFind.ahk" --demo
 ```
+
+## 常见问题
+
+**Q：和 macOS 上「摇晃放大鼠标」有什么区别？**
+A：macOS 是系统级功能，摇一摇触发、固定倍数。本工具是 Windows 下的替代方案，按移动速度连续变化：越快越大。同时它对双屏 / 缩放比例不一致的场景更实用。
+
+**Q：会干扰我正常点击吗？**
+A：不会。放大层是鼠标穿透、不抢焦点的覆盖层，只有鼠标移动足够快时才出现，且完全跟随真实指针位置。
+
+**Q：安全吗？会不会上传我的信息？**
+A：不会。全部逻辑在本地 `ShakeToFind.ahk` 一个文件里，无网络请求、无数据收集。安装包自带 AutoHotkey v2 运行时，目标电脑无需预装任何东西。
+
+**Q：会不会和别的鼠标软件冲突？**
+A：它只读取鼠标位置并绘制一个覆盖层，不Hook、不注入、不接管输入，一般不会冲突。同时开多个此类工具时可能互相遮挡，建议只留一个。
+
+**Q：为什么放大后的边缘不如系统渲染锐利？**
+A：Windows 没有提供系统级的光标缩放接口，这里用 GDI 位图放大 + HALFTONE 平滑来逼近 macOS 的观感，所以边缘略有锯齿。
+
+**Q：怎么让它更灵敏 / 更夸张？**
+A：见下方「调整灵敏度 / 外观」。
+
+## 同类工具
+
+| 工具 | 平台 | 做法 | 特点 |
+| --- | --- | --- | --- |
+| **ShakeToFind**（本项目） | Windows | 按移动速度连续放大 | 速度越快越大，透明穿透，绿色安装 |
+| macOS 摇晃放大 | macOS | 系统级摇一摇 | 系统渲染，最锐利，零延迟 |
+| Windows 放大镜 | Windows | 系统自带 Magnifier | 放大整个屏幕，功能更重 |
+| PointerFocus | Windows | 定时闪烁鼠标指针 | 靠闪烁提醒，不放大 |
+| Crosshair | 跨平台 | 屏幕中央显示准星 | 适合固定位置精细操作 |
 
 ## 调整灵敏度 / 外观
 
@@ -100,9 +167,17 @@ python assets\icon\build_icon.py
 
 > PowerShell 中要写 `.\build.cmd`；cmd 中直接输入 `build.cmd` 即可。
 
+## 参与贡献
+
+欢迎提 Issue 和 PR！贡献前请读 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
 ## 第三方组件
 
 - AutoHotkey v2（GPLv2），许可文本随安装包分发（`license.txt`）。
+
+## 许可
+
+本项目采用 [MIT 许可](LICENSE)。随包分发的 AutoHotkey v2 遵循其自身的 GPLv2 许可。
 
 ## 关闭开机自启
 

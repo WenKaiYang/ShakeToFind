@@ -1,0 +1,65 @@
+name: Bug 反馈
+description: 报告 ShakeToFind 的功能异常、崩溃或效果问题
+title: "[Bug] "
+labels: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！请尽量填全下面的信息，能大幅加快定位速度。
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 发生了什么
+      description: 描述你观察到的现象，而不是你推测的原因
+      placeholder: |
+        例如：快速甩动鼠标时放大层没有出现，或者出现了但不跟随指针
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows 版本
+      description: 按 `Win + R` 输入 `winver` 的输出
+      placeholder: Windows 11 家庭中文版 23H2
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: ShakeToFind 版本
+      placeholder: 1.0.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install-method
+    attributes:
+      label: 安装方式
+      options:
+        - 官方安装包
+        - 直接运行 ShakeToFind.ahk
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 附加日志（可选）
+      description: 把 `ShakeToFind.ahk` 里的 `DEBUG` 改成 `true` 后复现问题，把同目录的 `trigger.log` 贴在这里
+      render: shell

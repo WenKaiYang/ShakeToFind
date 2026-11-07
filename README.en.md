@@ -2,7 +2,26 @@ English | [简体中文](README.md)
 
 # ShakeToFind — Enlarge the cursor when you move fast (faster = bigger)
 
+[![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-blue.svg)](https://github.com/WenKaiYang/ShakeToFind/releases)
+[![AutoHotkey v2](https://img.shields.io/badge/AutoHotkey-v2.0-purple.svg)](https://www.autohotkey.com/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/WenKaiYang/ShakeToFind?label=Release&color=green)](https://github.com/WenKaiYang/ShakeToFind/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/WenKaiYang/ShakeToFind/total?color=blue)](https://github.com/WenKaiYang/ShakeToFind/releases)
+
+> **find my mouse / find the cursor / enlarge cursor / magnify mouse pointer / lost mouse position / cursor too small / cursor finder / mouse pointer zoom / bigger mouse pointer**
+>
+> A lightweight Windows fix for "where did my cursor go?" and "I can't see the pointer". The faster you move the mouse, the bigger the cursor gets.
+
+![ShakeToFind icon](assets/icon/preview.png)
+
 A "find my mouse" tool for Windows: once the mouse moves faster than normal, the pointer starts to grow; **the faster you move, the bigger it gets**, and as you slow down it continuously shrinks back to its normal size.
+
+## Why you might want it
+
+- **Multiple monitors / large displays / projectors**: the cursor jumps between screens with different scaling and is easy to lose.
+- **Laptop trackpad + external display**: different DPI scales make the cursor tiny on one screen.
+- **Presentations, screen recordings, tutorials**: the audience can't see where you're pointing.
+- **For elderly users or low vision**: scale the cursor 4–6× so click targets are obvious.
 
 ## What it does
 
@@ -13,6 +32,19 @@ A "find my mouse" tool for Windows: once the mouse moves faster than normal, the
 - The enlarged cursor follows the mouse in real time; it updates every 5 ms while visible, so it feels more responsive than usual.
 - The current cursor shape is synced automatically (arrow / I-beam / hand).
 - The overlay is click-through, never steals focus, and does not affect clicking.
+
+## Features
+
+| | |
+| --- | --- |
+| 🖱️ | Speed-driven zoom: faster = bigger, shrinks back when you slow down |
+| 🪟 | Click-through overlay: no focus stealing, no blocked clicks |
+| 🔄 | Syncs the live cursor shape (arrow / I-beam / hand) |
+| 🪶 | Lightweight: a single AutoHotkey script, clean install and uninstall |
+| 🔒 | No administrator rights; installs under `%LOCALAPPDATA%`, never touches system folders |
+| 🌐 | Fully local — **no network calls, no data collection** |
+| 🎨 | Ships with a custom icon, consistent across installer, shortcuts and tray |
+| ⚙️ | Sensitivity and zoom factor are plain parameters at the top of the script |
 
 ## Compared with macOS
 
@@ -27,11 +59,16 @@ A "find my mouse" tool for Windows: once the mouse moves faster than normal, the
 
 macOS scales the cursor itself at the system level; Windows has no equivalent API, so this tool approximates it with a click-through overlay that follows the mouse in real time. Because the cursor is a scaled bitmap, its edges are not as sharp as system rendering.
 
-## Install / Uninstall
+## Download & install
 
-- Install: run `dist\ShakeToFind-Setup-<version>.exe` (see `installer/BUILD.md` for building). It installs to `%LOCALAPPDATA%\Programs\ShakeToFind` without administrator rights; "start with Windows" is checked by default.
+Grab the latest `ShakeToFind-Setup-<version>.exe` from [Releases](https://github.com/WenKaiYang/ShakeToFind/releases):
+
+- Installs to `%LOCALAPPDATA%\Programs\ShakeToFind`, **no administrator rights required**.
+- "Start with Windows" is checked by default; untick it in the installer's "Additional tasks" page.
 - Uninstall: Windows Settings → Apps → ShakeToFind → Uninstall (or "Uninstall ShakeToFind" in the Start menu).
 - Migrate: copy the installer to another PC and run it there.
+
+> The installer is not code-signed, so SmartScreen may warn on first run — click "More info" → "Run anyway".
 
 ## Usage
 
@@ -43,6 +80,36 @@ macOS scales the cursor itself at the system level; Windows has no equivalent AP
 ```powershell
 & "$env:LOCALAPPDATA\Programs\ShakeToFind\AutoHotkey64.exe" "$env:LOCALAPPDATA\Programs\ShakeToFind\ShakeToFind.ahk" --demo
 ```
+
+## FAQ
+
+**Q: How is this different from the macOS "shake to enlarge the cursor" feature?**
+A: On macOS it's a system feature triggered by shaking, with a fixed zoom factor. This is the Windows counterpart, but it scales continuously with movement speed — the faster you move, the bigger it gets. It's also more useful across mixed-DPI multi-monitor setups.
+
+**Q: Does it interfere with clicking?**
+A: No. The magnified layer is a click-through, focus-free overlay. It only appears when you move fast enough, and it tracks the real pointer exactly.
+
+**Q: Is it safe? Will it upload anything?**
+A: No. Everything runs locally in a single `ShakeToFind.ahk` file — no network requests, no data collection. The installer bundles AutoHotkey v2, so nothing needs to be pre-installed on the target PC.
+
+**Q: Will it conflict with other mouse utilities?**
+A: Unlikely. It only reads the mouse position and draws an overlay; it doesn't hook, inject or take over input. Running two such tools at once may cause overlapping layers, so pick one.
+
+**Q: Why are the magnified edges less sharp than native rendering?**
+A: Windows exposes no system-level cursor scaling API, so this uses GDI bitmap scaling with HALFTONE smoothing to approximate the macOS look — which leaves slight jaggies.
+
+**Q: How do I make it more sensitive or more extreme?**
+A: See "Tuning sensitivity / appearance" below.
+
+## Similar tools
+
+| Tool | Platform | How it works | Notes |
+| --- | --- | --- | --- |
+| **ShakeToFind** (this project) | Windows | Continuous zoom driven by movement speed | Bigger when faster, transparent, clean install |
+| macOS shake-to-zoom | macOS | Native shake gesture | System-rendered, sharpest, zero latency |
+| Windows Magnifier | Windows | Built-in OS magnifier | Magnifies the whole screen, heavier |
+| PointerFocus | Windows | Blinks the pointer periodically | Uses blinking instead of enlarging |
+| Crosshair | Cross-platform | Draws a crosshair at screen centre | Better for precise, fixed-position work |
 
 ## Tuning sensitivity / appearance
 
@@ -100,9 +167,17 @@ The first build requires [Inno Setup 6](https://jrsoftware.org/isdl.php) and the
 
 > In PowerShell use `.\build.cmd`; in cmd simply type `build.cmd`.
 
+## Contributing
+
+Issues and pull requests are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+
 ## Third-party components
 
 - AutoHotkey v2 (GPLv2); its license is distributed with the installer (`license.txt`).
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). The bundled AutoHotkey v2 runtime is distributed under its own GPLv2 license.
 
 ## Disable auto-start
 

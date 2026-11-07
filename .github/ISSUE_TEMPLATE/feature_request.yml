@@ -1,0 +1,30 @@
+name: 功能建议
+description: 提出新功能、改进想法或参数调整需求
+title: "[Feature] "
+labels: enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎提出建议！描述一下你希望实现的效果，以及在什么场景下会用得上。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 想解决什么问题
+      description: 先说场景和困扰，再说方案会更清楚
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 期望的实现方式
+      description: 如果有具体想法（比如改哪个参数、加什么行为）可以写在这里
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 你考虑过的其他方案（可选）

@@ -1,0 +1,11 @@
+name: 其他
+description: 不属于 Bug 反馈或功能建议的其他问题（提问、翻译等）
+title: ""
+labels: question
+body:
+  - type: textarea
+    id: content
+    attributes:
+      label: 内容
+    validations:
+      required: true

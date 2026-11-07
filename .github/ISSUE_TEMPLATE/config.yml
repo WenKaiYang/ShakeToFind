@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 使用问题 / 提问
+    url: https://github.com/WenKaiYang/ShakeToFind/discussions
+    about: 安装、使用、参数调整等疑问，欢迎到 Discussions 提问
+  - name: 应用宝 / 腾讯电脑管家收录
+    url: https://guanjia.qq.com/software-platform/login
+    about: 想让 ShakeToFind 被电脑管家软件库收录，请走开放平台提交
